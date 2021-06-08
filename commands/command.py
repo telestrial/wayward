@@ -30,7 +30,6 @@ class Command(BaseCommand):
             every command, like prompts.
 
     """
-
     pass
 
 
@@ -86,11 +85,13 @@ class MuxCommand(Command):
         This hook is called after the command has finished executing
         (after self.func()).
         """
+
         caller = self.caller
-        prompt = 'HP: %i WP: %i' % (caller.db.hp, caller.db.will)
-        
-        caller.msg(' ')
-        caller.msg(prompt=prompt)
+
+        if caller.db.hp:
+            prompt = 'HP: %i WP: %i' % (caller.db.hp, caller.db.will)
+            caller.msg(' ')
+            caller.msg(prompt=prompt)
 
     def parse(self):
         """
