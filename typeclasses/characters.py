@@ -32,3 +32,18 @@ class Character(DefaultCharacter):
     """
 
     pass
+
+class Human(Character):
+    """
+    Implementation of Human Race in Wayward.
+    """
+    def at_object_creation(self):
+        """
+        Called only at initial creation. This is a rather silly
+        example since ability scores should vary from Character to
+        Character and is usually set during some character
+        generation step instead.
+        """
+        #set persistent attributes
+        self.db.hp = 100
+        self.db.will = 1

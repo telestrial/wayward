@@ -32,9 +32,10 @@ from evennia.settings_default import *
 ######################################################################
 
 # This is the name of your game. Make it catchy!
-SERVERNAME = "swmud"
+SERVERNAME = "Wayward"
 COMMAND_DEFAULT_CLASS = "commands.command.MuxCommand"
-
+CMDSET_UNLOGGEDIN = "evennia.contrib.menu_login.UnloggedinCmdSet"
+MULTISESSION_MODE = 2
 
 ######################################################################
 # Settings given in secret_settings.py override those in this file.

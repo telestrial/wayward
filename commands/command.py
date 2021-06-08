@@ -87,8 +87,8 @@ class MuxCommand(Command):
         (after self.func()).
         """
         caller = self.caller
-        prompt = '<TEST>'
-
+        prompt = 'HP: %i WP: %i' % (caller.db.hp, caller.db.will)
+        
         caller.msg(' ')
         caller.msg(prompt=prompt)
 
