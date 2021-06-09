@@ -7,20 +7,20 @@ class EditCmd(Command):
     Editing command.
 
     Usage:
-      @edit [object]
+      edit [object]
 
     Open a building menu to edit the specified object.  This menu allows to
     specific information about this object.
 
     Examples:
-      @edit here
-      @edit self
-      @edit #142
+      edit here
+      edit self
+      edit #142
 
     """
 
-    key = "@edit"
-    locks = "cmd:id(1) or perm(Builders)"
+    key = "edit"
+    locks = "perm(Builders)"
     help_category = "Building"
 
     def func(self):
@@ -51,15 +51,16 @@ class RoomBuildingMenu(BuildingMenu):
     """
 
     def init(self, room):
-        self.add_choice("title", key="t", attr="key", glance="{obj.key}", text="""
+        self.add_choice("name", key="n", attr="key", glance="{obj.key}", text="""
                 -------------------------------------------------------------------------------
-                Editing the title of {{obj.key}}(#{{obj.id}})
+                Editing the name of {{obj.key}}(#{{obj.id}})
 
-                You can change the title simply by entering it.
+                You can change the name simply by entering it.
                 Use |y{back}|n to go back to the main menu.
 
-                Current title: |c{{obj.key}}|n
+                Current name: |c{{obj.key}}|n
         """.format(back="|n or |y".join(self.keys_go_back)))
+        self.add_choice("Colored Name", key="c", attr="db.cname")
         self.add_choice_edit("description", "d")
         self.add_choice("exits", "e", glance=glance_exits, text=text_exits, on_nomatch=nomatch_exits)
 
