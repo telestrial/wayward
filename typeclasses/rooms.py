@@ -30,6 +30,7 @@ class Room(DefaultRoom):
         """
         #set persistent attributes
         self.db.cname = self.name
+        self.db.flags = []
 
     def get_display_name(self, looker, **kwargs):
         """
