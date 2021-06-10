@@ -1,6 +1,61 @@
 from evennia.contrib.building_menu import BuildingMenu
 from commands.command import Command
 
+from utils.utils import exit_stacker
+
+
+class RstatCmd(Command):
+    """
+    Part of the XEdit/Stat Building scheme.
+
+    Usage:
+      rstat [room name/id]
+
+    Will return the targetted room's modifiable values. Less verbose than 
+    examine. Will return the view for the invoker's current room if one is 
+    not specified.
+
+    Examples:
+      rstat
+      rstat 71
+      rstat bgs_canteen
+    """
+
+    key = "rstat"
+    locks = "perm(Builders)"
+    help_category = "Building"
+
+    def func(self):
+        args = self.args.strip()
+        if not args:
+            obj = self.caller.search('here')
+        elif args.isdigit():
+            obj = self.caller.search(f"#{args}")
+        else:
+            obj = self.caller.search(args, global_search=True)
+
+        if not obj:
+            return
+
+        exit_view = exit_stacker(self.caller, obj.exits)
+        
+        rstat_view = """
+|xName: |c{}       |xId: |c{}
+|xCname:|x {}
+|xFlags:|W {}
+|xDescription:|W
+{}
+|xExits:|W
+{}""".format(obj.name, obj.id, obj.db.cname, obj.db.flags, obj.db.desc, exit_view)
+
+        if obj.typename == "Room":
+            # self.msg(f'|xName: |c{obj.name}       |xId: |c{obj.id}\n|xCname:|x {obj.db.cname}\n|xDescription:|w\n{obj.db.desc}')
+            self.msg(rstat_view)
+        else:
+            self.msg("|r{} cannot be edited.|n".format(obj.get_display_name(self.caller)))
+            return
+
+
 class EditCmd(Command):
 
     """
