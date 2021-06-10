@@ -29,7 +29,10 @@ class Room(DefaultRoom):
         Called only at initial creation.
         """
         #set persistent attributes
-        self.db.cname = self.name
+
+        if not self.attributes.has('cname'):
+            self.db.cname = self.name
+        self.db.nightdesc = ''
         self.db.flags = []
 
     def get_display_name(self, looker, **kwargs):
