@@ -45,8 +45,10 @@ class RstatCmd(Command):
 |xFlags:|W {}
 |xDescription:|W
 {}
+|xNight Description:|W
+{}
 |xExits:|W
-{}""".format(obj.name, obj.id, obj.db.cname, obj.db.flags, obj.db.desc, exit_view)
+{}""".format(obj.name, obj.id, obj.db.cname, obj.db.flags, obj.db.desc, obj.db.nightdesc, exit_view)
 
         if obj.typename == "Room":
             # self.msg(f'|xName: |c{obj.name}       |xId: |c{obj.id}\n|xCname:|x {obj.db.cname}\n|xDescription:|w\n{obj.db.desc}')
