@@ -2,26 +2,27 @@ from evennia.contrib.building_menu import BuildingMenu
 from commands.command import Command
 
 from utils.utils import exit_stacker
+from utils.utils import stat_render
 
 
-class RstatCmd(Command):
+class StatCmd(Command):
     """
-    Part of the XEdit/Stat Building scheme.
+    An implementation of Xstat/edit system.
 
     Usage:
-      rstat [room name/id]
+      stat [room name/id]
 
-    Will return the targetted room's modifiable values. Less verbose than 
-    examine. Will return the view for the invoker's current room if one is 
+    Will return the targetted thing's modifiable values. Less verbose than
+    examine. Will return the view for the invoker's current room if one is
     not specified.
 
     Examples:
-      rstat
-      rstat 71
-      rstat bgs_canteen
+      stat
+      stat 71
+      stat bgs_canteen
     """
 
-    key = "rstat"
+    key = "stat"
     locks = "perm(Builders)"
     help_category = "Building"
 
@@ -37,28 +38,46 @@ class RstatCmd(Command):
         if not obj:
             return
 
-        exit_view = exit_stacker(self.caller, obj.exits)
-        
-        rstat_view = """
-|xName: |c{}       |xId: |c{}
-|xCname:|x {}
-|xFlags:|W {}
-|xDescription:|W
-{}
-|xNight Description:|W
-{}
-|xExits:|W
-{}""".format(obj.name, obj.id, obj.db.cname, obj.db.flags, obj.db.desc, obj.db.nightdesc, exit_view)
-
         if obj.typename == "Room":
-            # self.msg(f'|xName: |c{obj.name}       |xId: |c{obj.id}\n|xCname:|x {obj.db.cname}\n|xDescription:|w\n{obj.db.desc}')
-            self.msg(rstat_view)
+            self.msg(stat_render(self, obj))
         else:
-            self.msg("|r{} cannot be edited.|n".format(obj.get_display_name(self.caller)))
+            self.msg("|r{} cannot be edited.|n".format(
+                obj.get_display_name(self.caller)))
             return
 
 
 class EditCmd(Command):
+    """
+    Edit command for rooms, objects, mobs, and more! The power is in your hands.
+
+    Usage
+      edit [thing] [attribute] [value]
+
+    If no arguments are supplied, stats the current room. If only [thing] is supplied,
+    performs a stat command on that [thing]. With [thing] and [attribute], will attempt
+    to help you understand what values you can supply. The command should not let you set
+    things you shouldn't set....mostly.
+    """
+    key = "edit"
+    locks = "perm(Builders)"
+    help_category = "Building"
+
+    def func(self):
+        if not self.args.strip():
+            self.msg(stat_render(self, self.caller.search('here')))
+            return
+
+        self.args = self.args.split()
+        obj = self.caller.search(self.args[0], global_search=True)
+
+        if not obj:
+            return
+
+        if not obj.attributes.has(self.args[1]):
+            self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
+
+
+class ReditCmd(Command):
 
     """
     Editing command.
@@ -76,13 +95,14 @@ class EditCmd(Command):
 
     """
 
-    key = "edit"
+    key = "redit"
     locks = "perm(Builders)"
     help_category = "Building"
 
     def func(self):
         if not self.args.strip():
-            self.msg("|rYou should provide an argument to this function: the object to edit.|n")
+            self.msg(
+                "|rYou should provide an argument to this function: the object to edit.|n")
             return
 
         obj = self.caller.search(self.args.strip(), global_search=True)
@@ -92,12 +112,12 @@ class EditCmd(Command):
         if obj.typename == "Room":
             Menu = RoomBuildingMenu
         else:
-            self.msg("|rThe object {} cannot be edited.|n".format(obj.get_display_name(self.caller)))
+            self.msg("|rThe object {} cannot be edited.|n".format(
+                obj.get_display_name(self.caller)))
             return
 
         menu = Menu(self.caller, obj)
         menu.open()
-
 
 
 # Our building menus
@@ -119,7 +139,8 @@ class RoomBuildingMenu(BuildingMenu):
         """.format(back="|n or |y".join(self.keys_go_back)))
         self.add_choice("Colored Name", key="c", attr="db.cname")
         self.add_choice_edit("description", "d")
-        self.add_choice("exits", "e", glance=glance_exits, text=text_exits, on_nomatch=nomatch_exits)
+        self.add_choice("exits", "e", glance=glance_exits,
+                        text=text_exits, on_nomatch=nomatch_exits)
 
 
 # Menu functions
@@ -134,6 +155,7 @@ def glance_exits(room):
 
     return "\n  |gNo exit yet|n"
 
+
 def text_exits(caller, room):
     """Show the room exits in the choice itself."""
     text = "-" * 79
@@ -147,11 +169,13 @@ def text_exits(caller, room):
                 text += " (|y{aliases}|n)".format(aliases="|n, |y".join(
                         alias for alias in exit.aliases.all()))
             if exit.destination:
-                text += " toward {destination}".format(destination=exit.get_display_name(caller))
+                text += " toward {destination}".format(
+                    destination=exit.get_display_name(caller))
     else:
         text += "\n\n |gNo exit has yet been defined.|n"
 
     return text
+
 
 def nomatch_exits(menu, caller, room, string):
     """
@@ -164,8 +188,10 @@ def nomatch_exits(menu, caller, room, string):
 
     # Open a sub-menu, using nested keys
     caller.msg("Editing: {}".format(exit.key))
-    menu.open_submenu("commands.building.ExitBuildingMenu", exit, parent_keys=["e"])
+    menu.open_submenu("commands.building.ExitBuildingMenu",
+                      exit, parent_keys=["e"])
     return False
+
 
 class ExitBuildingMenu(BuildingMenu):
 

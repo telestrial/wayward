@@ -158,5 +158,14 @@ class Object(DefaultObject):
                                  object speaks
 
      """
+    def at_object_creation(self):
+        """
+        Called only at initial creation.
+        """
+        #set persistent attributes
 
-    pass
+        if not self.attributes.has('cname'):
+            self.db.cname = self.name
+        # Aliases ?
+        self.db.flags = []
+        self.db.long_desc = ''
