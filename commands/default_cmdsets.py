@@ -16,7 +16,6 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 
 from evennia import default_cmds
 
-from commands.building import ReditCmd
 from commands.building import EditCmd
 from commands.building import StatCmd
 from commands.default_overrides import CmdObjects
@@ -40,7 +39,6 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # any commands you add below will overload the default ones.
         #
         self.add(EditCmd())
-        self.add(ReditCmd())
         self.add(StatCmd())
         self.add(CmdObjects())
 
