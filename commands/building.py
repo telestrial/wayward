@@ -1,4 +1,6 @@
 from evennia.contrib.building_menu import BuildingMenu
+from evennia.utils import eveditor
+
 from commands.command import Command
 
 from utils.utils import exit_stacker
@@ -69,7 +71,7 @@ class EditCmd(Command):
             self.msg(stat_render(self, self.caller.location))
             return
 
-        self.args = self.args.split()
+        self.args = self.args.strip().split(" ", 2)
         obj = self.caller.search(self.args[0], global_search=True)
 
         if not obj:
@@ -77,12 +79,37 @@ class EditCmd(Command):
 
         if len(self.args) == 1:
             self.msg(stat_render(self, obj))
+            return
 
-        if not obj.attributes.has(self.args[1]):
-            self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
+        if self.args[1] in 'description':
+            self.args[1] = 'desc'
+        if self.args[1] in 'nightdescription':
+            self.args[1] = 'nightdesc'
+
         if len(self.args) == 2:
+            if not obj.attributes.has(self.args[1]):
+                self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
+
             self.msg(obj.attributes.get(self.args[1]))
 
+        if self.args[1] == 'desc' or self.args[1] == 'nightdesc':
+            def load(caller):
+                "get the current value"
+                return caller.attributes.get(self.args[1])
+
+            def save(caller, buffer):
+                "save the buffer"
+                caller.attributes.set("{}".format(self.args[1]), buffer)
+
+            def quit(caller):
+                "Since we define it, we must handle messages"
+                caller.msg("Editor exited")
+
+            eveditor.EvEditor(self.caller,
+                              loadfunc=load, savefunc=save, quitfunc=quit,
+                              key=self.args[1], persistent=True)
+
+# 6/13 - desc has two issues: 1) lines 84-87 always go to nightdesc 2) line 98 can't be pickled
 #        0    1    2
 # edit here desc the only way
 
