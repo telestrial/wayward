@@ -18,9 +18,9 @@ def stat_render(self, obj):
 |xName: |c{}       |xId: |c{}
 |xCname:|x {}
 |xFlags:|W {}
-|xDescription:|W
+|xDesc:|W
 {}
-|xNight Description:|W
+|xNight Desc:|W
 {}
 |xExits:|W
 {}""".format(obj.name, obj.id, obj.db.cname, obj.db.flags, obj.db.desc, obj.db.nightdesc, exit_view)
