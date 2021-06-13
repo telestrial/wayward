@@ -70,19 +70,18 @@ class EditCmd(Command):
             return
 
         self.args = self.args.split()
+        obj = self.caller.search(self.args[0], global_search=True)
+
+        if not obj:
+            return
 
         if len(self.args) == 1:
-            self.msg(stat_render(self, self.caller.search(self.args[0], global=True)))
+            self.msg(stat_render(self, obj))
 
-        # obj = self.caller.search(self.args[0], global_search=True)
-
-        # if not obj:
-        #     return
-
-        # if not obj.attributes.has(self.args[1]):
-        #     self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
-        # if len(self.args) == 2:
-        #     self.msg(obj.attributes.get(self.args[1]))
+        if not obj.attributes.has(self.args[1]):
+            self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
+        if len(self.args) == 2:
+            self.msg(obj.attributes.get(self.args[1]))
 
 #        0    1    2
 # edit here desc the only way
