@@ -6,6 +6,25 @@ from utils.utils import stat_render
 
 BUILD_FLAGS_ROOMS = ['indoors', 'outdoors', 'dark']
 
+# Setting up the Eveditor for long text input.
+desc_attrib = None
+
+
+def load(obj):
+    "get the current value"
+    return obj.attributes.get(desc_attrib)
+
+
+def save(obj, buffer):
+    "save the buffer"
+    obj.attributes.add(desc_attrib, buffer)
+
+
+def quit(caller):
+    "Since we define it, we must handle messages"
+    caller.msg("Editor exited")
+# ----------------------------------------------
+
 
 class StatCmd(Command):
     """
@@ -84,22 +103,12 @@ class EditCmd(Command):
                 self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
 
             if self.args[1] == 'desc':
-                def load(obj):
-                    "get the current value"
-                    return obj.attributes.get("desc")
-
-                def save(obj, buffer):
-                    "save the buffer"
-                    obj.attributes.set("desc", buffer)
-
-                def quit(caller):
-                    "Since we define it, we must handle messages"
-                    caller.msg("Editor exited")
-
-                key = "%s/desc" % obj
+                self.caller.ndb.desc_attrib = 'desc'
                 # launch the editor
+                key = 'desc'
+                buffer = ''
                 eveditor.EvEditor(self.caller,
-                                  loadfunc=load, savefunc=save, quitfunc=quit,
+                                  loadfunc=load(obj), savefunc=save(obj, buffer), quitfunc=quit,
                                   key=key)
 
 #        0    1    2
