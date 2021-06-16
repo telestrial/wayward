@@ -7,22 +7,58 @@ from utils.utils import stat_render
 BUILD_FLAGS_ROOMS = ['indoors', 'outdoors', 'dark']
 
 # Setting up the Eveditor for long text input.
-desc_attrib = None
 
 
-def load(obj):
+def _desc_load(caller):
+    "get the current description"
+    return caller.ndb.evmenu_target.db.desc or ""
+
+
+def _desc_save(caller, buf):
+    "save the buffer to that object's description"
+    caller.ndb.evmenu_target.db.desc = buf
+    caller.msg('Saved.')
+    return True
+
+
+def _desc_quit(caller):
+    "Since we define it, we must handle messages"
+    caller.msg("Exited editor.")
+
+
+def _nightdesc_load(caller):
     "get the current value"
-    return obj.attributes.get(desc_attrib)
+    return caller.ndb.evmenu_target.db.nightdesc or ""
 
 
-def save(obj, buffer):
+def _nightdesc_save(caller, buf):
     "save the buffer"
-    obj.attributes.add(desc_attrib, buffer)
+    caller.ndb.evmenu_target.db.nightdesc = buf
+    caller.msg('Saved.')
+    return True
 
 
-def quit(caller):
+def _nightdesc_quit(caller):
     "Since we define it, we must handle messages"
     caller.msg("Editor exited")
+
+# def _desc_load(caller):
+#     return caller.db.evmenu_target.db.desc or ""
+
+
+# def _desc_save(caller, buf):
+#     """
+#     Save line buffer to the desc prop. This should
+#     return True if successful and also report its status to the user.
+#     """
+#     caller.db.evmenu_target.db.desc = buf
+#     caller.msg("Saved.")
+#     return True
+
+
+# def _desc_quit(caller):
+#     caller.attributes.remove("evmenu_target")
+#     caller.msg("Exited editor.")
 # ----------------------------------------------
 
 
@@ -103,13 +139,26 @@ class EditCmd(Command):
                 self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
 
             if self.args[1] == 'desc':
-                self.caller.ndb.desc_attrib = 'desc'
+                self.caller.ndb.evmenu_target = obj
                 # launch the editor
-                key = 'desc'
-                buffer = ''
+                key = 'Description of %s' % (obj)
                 eveditor.EvEditor(self.caller,
-                                  loadfunc=load(obj), savefunc=save(obj, buffer), quitfunc=quit,
+                                  loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit,
                                   key=key)
+                return
+
+            if self.args[1] == 'nightdesc':
+                self.caller.ndb.evmenu_target = obj
+                # launch the editor
+                key = 'Night Description of %s' % (obj)
+                eveditor.EvEditor(self.caller,
+                                  loadfunc=_nightdesc_load, savefunc=_nightdesc_save, quitfunc=_nightdesc_quit,
+                                  key=key)
+                return
+
+            if len(self.args) == 3:
+                if self.arg[1] == 'cname':
+                    obj.attributes.add('cname', self.args[2])
 
 #        0    1    2
 #        1    2    3
