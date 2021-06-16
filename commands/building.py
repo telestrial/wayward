@@ -156,9 +156,26 @@ class EditCmd(Command):
                                   key=key)
                 return
 
-            if len(self.args) == 3:
-                if self.arg[1] == 'cname':
-                    obj.attributes.add('cname', self.args[2])
+        if self.args[1] == 'cname':
+            obj.attributes.add('cname', self.args[2])
+
+        if self.args[1] == 'flags':
+
+            if self.args[2] not in BUILD_FLAGS_ROOMS:
+                self.msg('That is not a valid build flag for rooms.')
+                return
+
+            if self.args[2] in obj.attributes.get('flags'):
+                obj.db.flags.remove(self.args[2])
+                self.msg('{} flag removed from {}.'.format(
+                    self.args[2], obj.name))
+                return
+
+            if self.args[2] not in obj.attributes.get('flags'):
+                obj.db.flags.append(self.args[2])
+                self.msg('{} flag added to {}.'. format(
+                    self.args[2], obj.name))
+                return
 
 #        0    1    2
 #        1    2    3
