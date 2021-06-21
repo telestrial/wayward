@@ -130,52 +130,55 @@ class EditCmd(Command):
         if not obj:
             return
 
-        if len(self.args) == 1:
-            self.msg(stat_render(self, obj))
-            return
+        if 'room' in obj.typeclass_path:
 
-        if len(self.args) == 2:
-            if not obj.attributes.has(self.args[1]):
-                self.msg('{} has no atrribute: {}'.format(obj, self.args[1]))
-
-            if self.args[1] == 'desc':
-                self.caller.ndb.evmenu_target = obj
-                # launch the editor
-                key = 'Description of %s' % (obj)
-                eveditor.EvEditor(self.caller,
-                                  loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit,
-                                  key=key)
+            if len(self.args) == 1:
+                self.msg(stat_render(self, obj))
                 return
 
-            if self.args[1] == 'nightdesc':
-                self.caller.ndb.evmenu_target = obj
-                # launch the editor
-                key = 'Night Description of %s' % (obj)
-                eveditor.EvEditor(self.caller,
-                                  loadfunc=_nightdesc_load, savefunc=_nightdesc_save, quitfunc=_nightdesc_quit,
-                                  key=key)
-                return
+            if len(self.args) == 2:
+                if not obj.attributes.has(self.args[1]):
+                    self.msg('{} has no atrribute: {}'.format(
+                        obj, self.args[1]))
 
-        if self.args[1] == 'cname':
-            obj.attributes.add('cname', self.args[2])
+                if self.args[1] == 'desc':
+                    self.caller.ndb.evmenu_target = obj
+                    # launch the editor
+                    key = 'Description of %s' % (obj)
+                    eveditor.EvEditor(self.caller,
+                                      loadfunc=_desc_load, savefunc=_desc_save, quitfunc=_desc_quit,
+                                      key=key)
+                    return
 
-        if self.args[1] == 'flags':
+                if self.args[1] == 'nightdesc':
+                    self.caller.ndb.evmenu_target = obj
+                    # launch the editor
+                    key = 'Night Description of %s' % (obj)
+                    eveditor.EvEditor(self.caller,
+                                      loadfunc=_nightdesc_load, savefunc=_nightdesc_save, quitfunc=_nightdesc_quit,
+                                      key=key)
+                    return
 
-            if self.args[2] not in BUILD_FLAGS_ROOMS:
-                self.msg('That is not a valid build flag for rooms.')
-                return
+            if self.args[1] == 'cname':
+                obj.attributes.add('cname', self.args[2])
 
-            if self.args[2] in obj.attributes.get('flags'):
-                obj.db.flags.remove(self.args[2])
-                self.msg('{} flag removed from {}.'.format(
-                    self.args[2], obj.name))
-                return
+            if self.args[1] == 'flags':
 
-            if self.args[2] not in obj.attributes.get('flags'):
-                obj.db.flags.append(self.args[2])
-                self.msg('{} flag added to {}.'. format(
-                    self.args[2], obj.name))
-                return
+                if self.args[2] not in BUILD_FLAGS_ROOMS:
+                    self.msg('That is not a valid build flag for rooms.')
+                    return
+
+                if self.args[2] in obj.attributes.get('flags'):
+                    obj.db.flags.remove(self.args[2])
+                    self.msg('{} flag removed from {}.'.format(
+                        self.args[2], obj.name))
+                    return
+
+                if self.args[2] not in obj.attributes.get('flags'):
+                    obj.db.flags.append(self.args[2])
+                    self.msg('{} flag added to {}.'. format(
+                        self.args[2], obj.name))
+                    return
 
 #        0    1    2
 #        1    2    3
