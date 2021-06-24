@@ -132,18 +132,19 @@ class EditCmd(Command):
 
         if 'room' in obj.typeclass_path:
 
-            "If there is no argument, stat."
+            # If there is no argument, stat command the room.
             if len(self.args) == 1:
                 self.msg(stat_render(self, obj))
                 return
 
             if len(self.args) == 2:
-                "if the field is invalid, tell them."
+
+                # if the field is invalid, tell them.
                 if not obj.attributes.has(self.args[1]):
                     self.msg('{} has no atrribute: {}'.format(
                         obj, self.args[1]))
 
-                "if it's a description, load the editor"
+                # if it's a description, load the editor
                 if self.args[1] == 'desc':
                     self.caller.ndb.evmenu_target = obj
                     # launch the editor
@@ -153,7 +154,7 @@ class EditCmd(Command):
                                       key=key)
                     return
 
-                "if it's a night description, load the editor"
+                # if it's a night description, load the editor
                 if self.args[1] == 'nightdesc':
                     self.caller.ndb.evmenu_target = obj
                     # launch the editor
@@ -163,31 +164,31 @@ class EditCmd(Command):
                                       key=key)
                     return
 
-            "If it's the colored name, set it."
+            # If it's the colored name, set it.
             if self.args[1] == 'cname':
                 obj.attributes.add('cname', self.args[2])
 
             if self.args[1] == 'flags':
 
-                "if it's not a valid flag, do not allow them to set"
+                # if it's not a valid flag, do not allow them to set
                 if self.args[2] not in BUILD_FLAGS_ROOMS:
                     self.msg('That is not a valid build flag for rooms.')
                     return
 
-                "if it's in the flag array, remove it."
+                # if it's in the flag array, remove it.
                 if self.args[2] in obj.attributes.get('flags'):
                     obj.db.flags.remove(self.args[2])
                     self.msg('{} flag removed from {}.'.format(
                         self.args[2], obj.name))
                     return
 
-                "if it's not in the flag array, add it."
+                # if it's not in the flag array, add it.
                 if self.args[2] not in obj.attributes.get('flags'):
                     obj.db.flags.append(self.args[2])
                     self.msg('{} flag added to {}.'. format(
                         self.args[2], obj.name))
                     return
 
-#        0    1    2
-#        1    2    3
+# pos    0    1    2
+# len()  1    2    3
 # edit here desc the only way
