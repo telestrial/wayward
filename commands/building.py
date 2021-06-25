@@ -189,6 +189,4 @@ class EditCmd(Command):
                         self.args[2], obj.name))
                     return
 
-# pos    0    1    2
-# len()  1    2    3
-# edit here desc the only way
+# TODO: create sets on other room properties.
