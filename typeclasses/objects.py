@@ -169,3 +169,4 @@ class Object(DefaultObject):
         # Aliases ?
         self.db.flags = []
         self.db.long_desc = ''
+        self.db.type = ''
